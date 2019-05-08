@@ -1,12 +1,7 @@
 package com.zoyo.jpctae;
 
-import android.opengl.GLSurfaceView;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
+import android.support.v7.app.AppCompatActivity;
 
 import com.zoyo.core.CustomGLSurfaceView;
 
@@ -21,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mGLSurfaceView = (CustomGLSurfaceView) findViewById(R.id.gl_surfaceView);
 
+        //传的文件在本地必须存在不然会加载失败
         mGLSurfaceView.addObject(MainActivity.this, "watertruck.obj", "watertruck.mtl");
 
     }
