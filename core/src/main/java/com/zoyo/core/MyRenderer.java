@@ -1,4 +1,4 @@
-package com.zoyo.jpctae;
+package com.zoyo.core;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -10,15 +10,12 @@ import com.threed.jpct.FrameBuffer;
 import com.threed.jpct.Interact2D;
 import com.threed.jpct.Light;
 import com.threed.jpct.Loader;
-import com.threed.jpct.Matrix;
 import com.threed.jpct.Object3D;
 import com.threed.jpct.RGBColor;
 import com.threed.jpct.SimpleVector;
 import com.threed.jpct.World;
 
 import java.io.IOException;
-import java.net.ContentHandler;
-import java.util.GregorianCalendar;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -39,10 +36,12 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
         world = new World();
         world.setAmbientLight(25, 25, 25);
         Light light = new Light(world);
+        light.enable();
         light.setIntensity(250, 250, 250);
         light.setPosition(new SimpleVector(0, 0, -15));
 
         Camera camera = world.getCamera();
+        camera.setPosition(0, 0, 1);
         camera.moveCamera(Camera.CAMERA_MOVEOUT, 20);
     }
 
@@ -58,7 +57,6 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
         frameBuffer = new FrameBuffer(gl, width, height);
 
     }
-
     @Override
     public void onDrawFrame(GL10 gl) {
         frameBuffer.clear(bgColor);
@@ -67,16 +65,16 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
         frameBuffer.display();
     }
 
-
-    public void addObject(Context context, String assetName, String mtlName) {
+    /*
+     * assets资源文件下的.obj文件和.mtl文件
+     */
+    public void addObject(Context context, String objName, String mtlName) {
         try {
-            Object3D[] object3DS = Loader.loadOBJ(context.getResources().getAssets().open(assetName), context.getResources().getAssets().open(mtlName), 0.5f);
+            Object3D[] object3DS = Loader.loadOBJ(context.getResources().getAssets().open(objName), context.getResources().getAssets().open(mtlName), 0.5f);
             mModel = Object3D.mergeAll(object3DS);
-
-//            mModel.setTexture("camaro_texture");
             mModel.setOrigin(new SimpleVector(0, 0, 50));
             mModel.rotateZ(160.f);
-            mModel.setName(assetName);
+            mModel.setName(objName);
 
             mModel.strip();
             mModel.build();
