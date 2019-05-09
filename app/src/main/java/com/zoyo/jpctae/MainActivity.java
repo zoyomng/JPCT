@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         mGLSurfaceView = (CustomGLSurfaceView) findViewById(R.id.gl_surfaceView);
 
         //传的文件在本地必须存在不然会加载失败
+        mGLSurfaceView.setMinScale(0.5f);
         mGLSurfaceView.addObject(MainActivity.this, "watertruck.obj", "watertruck.mtl");
 
     }
