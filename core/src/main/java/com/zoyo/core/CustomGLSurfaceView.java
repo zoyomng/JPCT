@@ -4,10 +4,8 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.widget.Toast;
 
 /*
 * 自定义GLSURfaceView
@@ -42,6 +40,8 @@ public class CustomGLSurfaceView extends GLSurfaceView implements ScaleGestureDe
     private MyRenderer myRenderer;
     private Context context;
     private ScaleGestureDetector scaleGestureDetector;
+    private TouchListener mTouchListener;
+
 
     public CustomGLSurfaceView(Context context) {
         this(context, null);
@@ -87,7 +87,9 @@ public class CustomGLSurfaceView extends GLSurfaceView implements ScaleGestureDe
             case MotionEvent.ACTION_DOWN:
                 xpos = event.getX();
                 ypos = event.getY();
-                myRenderer.reproject((int) xpos, (int) ypos);
+                int reproject = myRenderer.reproject((int) xpos, (int) ypos);
+                if (mTouchListener != null)
+                    mTouchListener.onTouchObject3D(reproject);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 break;
@@ -199,11 +201,14 @@ public class CustomGLSurfaceView extends GLSurfaceView implements ScaleGestureDe
         float div = detector.getCurrentSpan() - detector.getPreviousSpan();
         div /= 300;
         scale += div;
-        if (scale < minScale) {
-            Toast.makeText(context, "已达到最小比例值", Toast.LENGTH_SHORT).show();
-        } else {
-            myRenderer.setScale(scale);
-        }
+//        if (scale < minScale) {
+//            Toast.makeText(context, "已达到最小比例值", Toast.LENGTH_SHORT).show();
+//        } else {
+//            myRenderer.setScale(scale);
+//        }
+
+        myRenderer.setScale(scale);
+
         System.out.println("============缩放=====================");
         lastMultiTouchTime = System.currentTimeMillis();
         return true;
@@ -222,5 +227,12 @@ public class CustomGLSurfaceView extends GLSurfaceView implements ScaleGestureDe
     /*设置最小缩放比例*/
     public void setMinScale(float minScale) {
         this.minScale = minScale;
+    }
+    public interface TouchListener{
+        void onTouchObject3D(int id);
+    }
+
+    public void setTouchLisenter(TouchListener listener){
+        mTouchListener = listener;
     }
 }

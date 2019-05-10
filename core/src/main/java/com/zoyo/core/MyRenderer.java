@@ -57,6 +57,7 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
         frameBuffer = new FrameBuffer(gl, width, height);
 
     }
+
     @Override
     public void onDrawFrame(GL10 gl) {
         frameBuffer.clear(bgColor);
@@ -70,11 +71,32 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
      */
     public void addObject(Context context, String objName, String mtlName) {
         try {
-            Object3D[] object3DS = Loader.loadOBJ(context.getResources().getAssets().open(objName), context.getResources().getAssets().open(mtlName), 0.5f);
-            mModel = Object3D.mergeAll(object3DS);
-            mModel.setOrigin(new SimpleVector(0, 0, 50));
-            mModel.rotateZ(160.f);
-            mModel.setName(objName);
+            //加载obj文件,返回Object3D对象数组
+            Object3D[] object3DS = Loader.loadOBJ(context.getResources().getAssets().open(objName), context.getResources().getAssets().open(mtlName), 0.05f);
+
+
+//            //将返回的Object3D对象数组合并成一个Object3D
+//            mModel = Object3D.mergeAll(object3DS);
+//            mModel.setOrigin(new SimpleVector(0, 0, 50));
+//            mModel.rotateZ(160.f);
+//            mModel.setName(objName);
+//
+//            mModel.strip();
+//            mModel.build();
+//            mModel.setCollisionMode(Object3D.COLLISION_CHECK_OTHERS | Object3D.COLLISION_CHECK_SELF);
+//            mModel.setCollisionOptimization(true);
+//            mModel.addCollisionListener(this);
+//            world.addObject(mModel);
+
+            //创建一个基础的Object3D对象
+            mModel = new Object3D(0);
+
+            for (int i = 0; i < object3DS.length; i++) {
+                Object3D object3D = object3DS[i];
+                mModel.addChild(object3D);
+                world.addObject(object3D);
+                object3D.setCollisionMode(Object3D.COLLISION_CHECK_OTHERS);
+            }
 
             mModel.strip();
             mModel.build();
@@ -82,6 +104,7 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
             mModel.setCollisionOptimization(true);
             mModel.addCollisionListener(this);
             world.addObject(mModel);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,9 +124,16 @@ public class MyRenderer implements GLSurfaceView.Renderer, CollisionListener {
         return false;
     }
 
-    public void reproject(int xpos, int ypos) {
+    public int reproject(int xpos, int ypos) {
         SimpleVector ray = Interact2D.reproject2D3DWS(world.getCamera(), frameBuffer, xpos, ypos).normalize();
-        world.calcMinDistanceAndObject3D(world.getCamera().getPosition(), ray, 10000F);
+        Object[] objects = world.calcMinDistanceAndObject3D(world.getCamera().getPosition(), ray, 10000F);
+        Object3D object = (Object3D) objects[1];
+        if (object != null) {
+            int id = object.getID();
+            System.out.println("======================" + id);
+            return id;
+        }
+        return -1;
     }
 
     /*

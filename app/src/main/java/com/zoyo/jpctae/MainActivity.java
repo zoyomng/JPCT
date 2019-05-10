@@ -2,6 +2,7 @@ package com.zoyo.jpctae;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.zoyo.core.CustomGLSurfaceView;
 
@@ -18,8 +19,13 @@ public class MainActivity extends AppCompatActivity {
 
         //传的文件在本地必须存在不然会加载失败
         mGLSurfaceView.setMinScale(0.5f);
-        mGLSurfaceView.addObject(MainActivity.this, "watertruck.obj", "watertruck.mtl");
-
+        mGLSurfaceView.addObject(MainActivity.this, "磁选机66.obj", "watertruck.mtl");
+        mGLSurfaceView.setTouchLisenter(new CustomGLSurfaceView.TouchListener() {
+            @Override
+            public void onTouchObject3D(int id) {
+                Toast.makeText(MainActivity.this, "id=" + id, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
